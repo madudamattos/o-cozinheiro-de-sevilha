@@ -14,13 +14,21 @@ public class Lane : MonoBehaviour
 
     int spawnIndex = 0;
     int inputIndex = 0;
+    bool inputReceived = false;
+
     public GameObject hitBox;
+    public string laneID = "D";
 
-    // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
-
+        InputEvents.OnLaneInput += ReceiveInput;
     }
+
+    void OnDisable()
+    {
+        InputEvents.OnLaneInput -= ReceiveInput;
+    }
+
     public void SetTimeStamps(Melanchall.DryWetMidi.Interaction.Note[] array)
     {
         foreach (var note in array)
@@ -52,7 +60,7 @@ public class Lane : MonoBehaviour
             double marginOfError = SongManager.Instance.marginOfError;
             double audioTime = SongManager.GetAudioSourceTime() - (SongManager.Instance.inputDelayInMilliseconds / 1000.0);
 
-            if (Input.GetKeyDown(input))
+            if (inputReceived || Input.GetKeyDown(input))
             {
                 if (Math.Abs(audioTime - timeStamp) < marginOfError)
                 {
@@ -65,11 +73,13 @@ public class Lane : MonoBehaviour
                 {
                     print($"Hit inaccurate on {inputIndex} note with {Math.Abs(audioTime - timeStamp)} delay");
                 }
+
+                inputReceived = false;
             }
             if (timeStamp + marginOfError <= audioTime)
             {
                 Miss();
-                print($"Missed {inputIndex} note");
+                // print($"Missed {inputIndex} note");
                 Destroy(notes[inputIndex].gameObject);
                 inputIndex++;
             }
@@ -89,10 +99,18 @@ public class Lane : MonoBehaviour
     {
         ScoreManager.Miss();
     }
+    
+    public void ReceiveInput(string triggeredID)
+    {
+        if (triggeredID == laneID)
+        {
+            inputReceived = true;
+        }
+    }
 
     public void hitboxReduceColorOpacity()
     {
-        SpriteRenderer sr =  hitBox.GetComponent<SpriteRenderer>();
+        SpriteRenderer sr = hitBox.GetComponent<SpriteRenderer>();
         Color c = sr.color;
         c.a = .4f;
         sr.color = c;

@@ -12,6 +12,7 @@ public class TriggerObject : MonoBehaviour
         if (col.gameObject.tag == "trigger")
         {
             Debug.Log("Entrou on trigger enter");
+            InputEvents.TriggerLaneInput("D");
             OnMyEvent?.Invoke();
         }
         
