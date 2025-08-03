@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - trigger
+  - flour
+  - water
+  - sack
+  - spoon
+  - Oil
   layers:
   - Default
   - TransparentFX
@@ -12,8 +17,8 @@ TagManager:
   - Overlay UI
   - Water
   - UI
-  - 
-  - 
+  - eggshell
+  - egg
   - 
   - 
   - 

@@ -1,45 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class EventManager : MonoBehaviour
 {
-    int count = 0;
-    [SerializeField] GameObject tomato;
-    [SerializeField] GameObject slicedTomato;
+    public List<GameObject> trigger_list = new List<GameObject>();
+    private int listIndex = 0;
+    public static event Action TriggerFinished;
 
-    void OnEnable()
+    private void OnEnable()
     {
-        // Inscreve o método ao evento
-        TriggerObject.OnMyEvent += MyMethod;
-        Debug.Log("[EventManager]: Event subscribed");
+        TriggerFinished += NextEvent;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
-        // Cancela a inscrição para evitar erros
-        TriggerObject.OnMyEvent -= MyMethod;
-        Debug.Log("[EventManager]: MyMethod unsubscribed to TriggerObj");
+        TriggerFinished -= NextEvent;
     }
 
-    void MyMethod()
+    // passa para o próximo evento
+    public void NextEvent()
     {
-        Debug.Log("[EventManager]: Entrou");
-        Debug.Log(count);
-        if (count < 3)
+        if (listIndex < trigger_list.Count - 1)
         {
-            count++;
-            Debug.Log("[EventManager]: primeiro if");
-        }
-        else if (count == 3)
-        {
-            tomato.SetActive(false);
-            slicedTomato.SetActive(true);
-            count++;
+            trigger_list[listIndex].SetActive(false);
+            trigger_list[++listIndex].SetActive(true);
         }
         else
         {
-            Debug.Log("[EventManager]: Evento finalizado");
+            Debug.Log("Fim da lista de eventos.");
         }
+    }
+    
+    public static void NotifyTriggerFinished()
+    {
+        TriggerFinished?.Invoke();
     }
 }

@@ -6,6 +6,11 @@ public class TriggerObject : MonoBehaviour
 {
     public delegate void MyEventDelegate();
     public static event MyEventDelegate OnMyEvent;
+    int count = 0;
+    [SerializeField] GameObject tomato;
+    [SerializeField] GameObject slicedTomato;
+
+    public EventManager _eventManager;
 
     void OnTriggerEnter(Collider col)
     {
@@ -13,8 +18,37 @@ public class TriggerObject : MonoBehaviour
         {
             Debug.Log("Entrou on trigger enter");
             InputEvents.TriggerLaneInput("D");
-            OnMyEvent?.Invoke();
+            ProcessInteraction();
         }
-        
     }
+
+    void ProcessInteraction()
+    {
+        Debug.Log("[EventManager]: Entrou");
+        Debug.Log(count);
+        if (count < 3)
+        {
+            count++;
+            Debug.Log("[EventManager]: primeiro if");
+        }
+        else if (count == 3)
+        {
+            tomato.SetActive(false);
+            slicedTomato.SetActive(true);
+            count++;
+            
+        }
+        else
+        {
+            FinishInteraction();
+            Debug.Log("[EventManager]: Evento finalizado");
+        }
+    }
+    
+    void FinishInteraction()
+    {
+        Debug.Log("[TomatoTrigger]: Interaction finished!");
+        EventManager.NotifyTriggerFinished();
+    }
+
 }
