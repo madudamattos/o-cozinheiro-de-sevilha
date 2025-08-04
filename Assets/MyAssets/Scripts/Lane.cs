@@ -19,6 +19,8 @@ public class Lane : MonoBehaviour
     public GameObject hitBox;
     public string laneID = "D";
 
+    public ScoreManager _scoreManager;
+
     void OnEnable()
     {
         InputEvents.OnLaneInput += ReceiveInput;
@@ -93,11 +95,11 @@ public class Lane : MonoBehaviour
         CancelInvoke(nameof(hitboxRestoreOpacity));
         hitboxReduceColorOpacity();
         Invoke(nameof(hitboxRestoreOpacity), .2f);
-        ScoreManager.Hit();
+        _scoreManager.Hit();
     }
     private void Miss()
     {
-        ScoreManager.Miss();
+        _scoreManager.Miss();
     }
     
     public void ReceiveInput(string triggeredID)
@@ -112,7 +114,7 @@ public class Lane : MonoBehaviour
     {
         SpriteRenderer sr = hitBox.GetComponent<SpriteRenderer>();
         Color c = sr.color;
-        c.a = .4f;
+        c.r = .1f;
         sr.color = c;
     }
 
@@ -120,7 +122,7 @@ public class Lane : MonoBehaviour
     {
         SpriteRenderer sr =  hitBox.GetComponent<SpriteRenderer>();
         Color c = sr.color;
-        c.a = 1f;
+        c.r = .9f;
         sr.color = c;
     }
 }

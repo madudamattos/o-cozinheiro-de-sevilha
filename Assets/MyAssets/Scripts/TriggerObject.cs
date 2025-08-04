@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class TriggerObject : MonoBehaviour
 {
-    public delegate void MyEventDelegate();
-    public static event MyEventDelegate OnMyEvent;
     int count = 0;
     [SerializeField] GameObject tomato;
     [SerializeField] GameObject slicedTomato;
