@@ -30,7 +30,7 @@ public class White : MonoBehaviour
 
     IEnumerator ExecutarAcoesComDelay()
     {
-        yield return new WaitForSeconds(1f); // espera 1 segundo
+        yield return new WaitForSeconds(1.5f); // espera 1 segundo
 
         for (int i = 0; i < deactivateItems.Count; i++)
         {

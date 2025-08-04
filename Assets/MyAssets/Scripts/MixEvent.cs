@@ -23,7 +23,7 @@ public class MixEvent : MonoBehaviour
 
     void ProcessInteraction()
     {
-        if (count < 10)
+        if (count < 11)
         {
             count++;
             if (index < deactivateItems.Count)
@@ -32,7 +32,7 @@ public class MixEvent : MonoBehaviour
                 index++;
             }
         }
-        else if (count == 10)
+        else if (count == 11)
         {
             // instancia a massa 
             top.SetActive(false);
