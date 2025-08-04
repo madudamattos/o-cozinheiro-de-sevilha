@@ -8,5 +8,9 @@ public class GrabTrigger : MonoBehaviour
     {
         InputEvents.TriggerLaneInput("D");
     }
- 
+    
+    public void ReleaseObject()
+    {
+        this.GetComponent<Rigidbody>().isKinematic = false;
+    }
 }

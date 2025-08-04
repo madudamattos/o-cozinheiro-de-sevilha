@@ -32,10 +32,6 @@ public class SpoonTrigger : MonoBehaviour
     {
         if (listIndex < objects.Count)
         {
-            if (listIndex > 0)
-            {
-                Destroy(objects[listIndex - 1].gameObject);
-            }
             objects[listIndex].SetActive(true);
             listIndex++;
 

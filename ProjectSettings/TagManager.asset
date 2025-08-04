@@ -9,7 +9,12 @@ TagManager:
   - water
   - sack
   - spoon
-  - Oil
+  - eggbreaker
+  - egg
+  - oil
+  - white
+  - FxTemporaire
+  - mix
   layers:
   - Default
   - TransparentFX
@@ -19,7 +24,7 @@ TagManager:
   - UI
   - eggshell
   - egg
-  - 
+  - white
   - 
   - 
   - 
