@@ -17,8 +17,9 @@ public class SongManager : MonoBehaviour
 
     public int inputDelayInMilliseconds;
     
-
-    public string fileLocation;
+    // O nome da sua música em StreamingAssets é "notesChart2.mid"
+    public string fileLocation = "notesChart2.mid";
+    
     public float noteTime;
     public float noteSpawnX;
     public float noteTapX;
@@ -31,49 +32,64 @@ public class SongManager : MonoBehaviour
     }
 
     public static MidiFile midiFile;
-    // Start is called before the first frame update
+
     void Start()
     {
         Instance = this;
-        if (Application.streamingAssetsPath.StartsWith("http://") || Application.streamingAssetsPath.StartsWith("https://"))
+        // Inicia a corrotina para carregar o arquivo MIDI usando UnityWebRequest.
+        // Essa abordagem funciona para todas as plataformas, incluindo PC, WebGL e Android/Quest 3.
+        StartCoroutine(LoadMidiFile());
+    }
+
+    private IEnumerator LoadMidiFile()
+    {
+        // Constrói o caminho completo para o arquivo MIDI.
+        // Application.streamingAssetsPath já lida com as diferenças entre plataformas.
+        string filePath = Path.Combine(Application.streamingAssetsPath, fileLocation);
+        
+        UnityWebRequest www;
+
+        // Se a plataforma for Android, o caminho precisa ser ajustado para um formato de URL.
+        // No PC, o caminho já funciona como um URI de arquivo.
+        if (Application.platform == RuntimePlatform.Android)
         {
-            StartCoroutine(ReadFromWebsite());
+            // O caminho precisa começar com "jar:file://" para acessar o .apk
+            filePath = "jar:file://" + Application.dataPath + "!/assets/" + fileLocation;
+            www = UnityWebRequest.Get(filePath);
         }
         else
         {
-            ReadFromFile();
+            // Para outras plataformas (PC, WebGL, etc.), o caminho padrão funciona.
+            www = UnityWebRequest.Get(filePath);
         }
-    }
 
-    private IEnumerator ReadFromWebsite()
-    {
-        using (UnityWebRequest www = UnityWebRequest.Get(Application.streamingAssetsPath + "/" + fileLocation))
+        Debug.Log("Tentando carregar o MIDI do caminho: " + filePath);
+        
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
         {
-            yield return www.SendWebRequest();
-
-            if (www.isNetworkError || www.isHttpError)
+            Debug.LogError("Erro ao carregar o arquivo MIDI: " + www.error);
+        }
+        else
+        {
+            byte[] results = www.downloadHandler.data;
+            using (var stream = new MemoryStream(results))
             {
-                Debug.LogError(www.error);
-            }
-            else
-            {
-                byte[] results = www.downloadHandler.data;
-                using (var stream = new MemoryStream(results))
-                {
-                    midiFile = MidiFile.Read(stream);
-                    GetDataFromMidi();
-                }
+                midiFile = MidiFile.Read(stream);
+                GetDataFromMidi();
             }
         }
     }
 
-    private void ReadFromFile()
-    {
-        midiFile = MidiFile.Read(Application.streamingAssetsPath + "/" + fileLocation);
-        GetDataFromMidi();
-    }
     public void GetDataFromMidi()
     {
+        if (midiFile == null)
+        {
+            Debug.LogError("midiFile é nulo. Certifique-se de que o arquivo MIDI foi carregado corretamente.");
+            return;
+        }
+
         var notes = midiFile.GetNotes();
         var array = new Melanchall.DryWetMidi.Interaction.Note[notes.Count];
         notes.CopyTo(array, 0);
@@ -82,10 +98,12 @@ public class SongManager : MonoBehaviour
 
         Invoke(nameof(StartSong), songDelayInSeconds);
     }
+
     public void StartSong()
     {
         audioSource.Play();
     }
+    
     public static double GetAudioSourceTime()
     {
         return (double)Instance.audioSource.timeSamples / Instance.audioSource.clip.frequency;
